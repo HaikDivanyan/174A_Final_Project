@@ -1,61 +1,22 @@
-import { defs, tiny } from '/common.js';
-import { Obstacle } from './obstacle.js';
+import { Obstacle } from "./obstacle.js";
+import { tiny } from "/common.js";
 
-const {
-  vec3,
-  vec4,
-  vec,
-  color,
-  Mat4,
-  Light,
-  Shape,
-  Material,
-  Shader,
-  Texture,
-  Scene,
-} = tiny;
+const { vec3, vec4, vec, color, Mat4, Light, Shape, Material, Shader, Texture, Scene } = tiny;
 
 export class Board {
   // start_z represents the z-coordinate of the board at spawn
   constructor(start_z) {
     // this contains the grid pattern for each possible layer of obstacles
     this.patterns = [
-      [
-        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1,
-        1,
-      ],
-      [
-        1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-        1,
-      ],
-      [
-        1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1,
-        1,
-      ],
-      [
-        0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0,
-        0,
-      ],
-      [
-        1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0,
-        1,
-      ],
-      [
-        1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0,
-        0,
-      ],
-      [
-        0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
-        1,
-      ],
-      [
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0,
-      ],
-      [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        1,
-      ],
+      [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1],
+      [1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0],
+      [0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     ];
 
     // holds the index of the current pattern
@@ -66,18 +27,15 @@ export class Board {
 
     // create 25 obstacles that will form the board
     this.obstacles = [];
-    for (let i = 0; i < 25; i++)
+    for (let i = 0; i < 25; i++) {
       this.obstacles.push(
         new Obstacle(
-          Mat4.identity().times(
-            Mat4.translation(
-              -8 + (i % 5) * 4,
-              11 - Math.floor(i / 5) * 4,
-              this.z
-            )
-          )
+          Mat4.identity()
+            .times(Mat4.rotation((45 * Math.PI) / 180, 0, 0, 1)) // 45 degree rotation around Z-axis
+            .times(Mat4.translation(-8 + (i % 5) * 4, 11 - Math.floor(i / 5) * 4, this.z))
         )
       );
+    }
   }
 
   // move the board
@@ -92,9 +50,7 @@ export class Board {
     this.z -= 300;
     this.pattern_index = Math.floor(Math.random() * this.patterns.length); // creates new board pattern
     for (let i = 0; i < 25; i++)
-      this.obstacles[i].transform = this.obstacles[i].transform.times(
-        Mat4.translation(0, 0, -300)
-      );
+      this.obstacles[i].transform = this.obstacles[i].transform.times(Mat4.translation(0, 0, -300));
   }
 
   // checks if any obstacle on the board has collided with the ship
@@ -119,8 +75,7 @@ export class Board {
   draw(context, program_state, speed, dt) {
     this.move(speed, dt); // move the obstacles
     for (let i = 0; i < 25; i++) {
-      if (this.patterns[this.pattern_index][i] == 1)
-        this.obstacles[i].draw(context, program_state);
+      if (this.patterns[this.pattern_index][i] == 1) this.obstacles[i].draw(context, program_state);
     }
   }
 }

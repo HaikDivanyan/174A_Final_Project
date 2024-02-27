@@ -1,18 +1,6 @@
-import { defs, tiny } from '/common.js';
+import { defs, tiny } from "/common.js";
 
-const {
-  vec3,
-  vec4,
-  vec,
-  color,
-  Mat4,
-  Light,
-  Shape,
-  Material,
-  Shader,
-  Texture,
-  Scene,
-} = tiny;
+const { vec3, vec4, vec, color, Mat4, Light, Shape, Material, Shader, Texture, Scene } = tiny;
 
 // This class will contain the necessary members and methods to implement a destructible, physically animated
 // cube obstacle.
@@ -24,7 +12,7 @@ export class Obstacle {
     this.cube = new defs.Cube();
     this.fragments = []; // will hold the Obstacle_Fragment objects generated upon collision
     this.material = new Material(new defs.Spotlight_Shader(), {
-      color: color(0, 0, 1, 1),
+      color: color(0, 1, 0, 1),
       ambient: 0.15,
     });
   }
@@ -33,8 +21,7 @@ export class Obstacle {
   move(speed, dt) {
     this.transform = this.transform.times(Mat4.translation(0, 0, speed * dt));
     if (this.is_fractured) {
-      for (let i = 0; i < this.fragments.length; i++)
-        this.fragments[i].move(speed, dt);
+      for (let i = 0; i < this.fragments.length; i++) this.fragments[i].move(speed, dt);
     }
   }
 
@@ -60,18 +47,10 @@ export class Obstacle {
 
     // four fragments
     this.fragments = [];
-    this.fragments.push(
-      new Obstacle_Fragment(left, bottom, front, 1, 1, -1, -1)
-    ); // lower-left
-    this.fragments.push(
-      new Obstacle_Fragment(left + 1, bottom, front, 1, 1, 1, -1)
-    ); // lower-right
-    this.fragments.push(
-      new Obstacle_Fragment(left, bottom + 1, front, 1, 1, -1, 1)
-    ); // upper-left
-    this.fragments.push(
-      new Obstacle_Fragment(left + 1, bottom + 1, front, 1, 1, 1, 1)
-    ); // upper-right
+    this.fragments.push(new Obstacle_Fragment(left, bottom, front, 1, 1, -1, -1)); // lower-left
+    this.fragments.push(new Obstacle_Fragment(left + 1, bottom, front, 1, 1, 1, -1)); // lower-right
+    this.fragments.push(new Obstacle_Fragment(left, bottom + 1, front, 1, 1, -1, 1)); // upper-left
+    this.fragments.push(new Obstacle_Fragment(left + 1, bottom + 1, front, 1, 1, 1, 1)); // upper-right
   }
 
   // draw the unfractured obstacle on the screen
@@ -116,11 +95,7 @@ export class Obstacle_Fragment {
   draw(context, program_state) {
     let transform = Mat4.identity()
       .times(
-        Mat4.translation(
-          this.pos.x - this.width / 2,
-          this.pos.y - this.height / 2,
-          this.pos.z
-        )
+        Mat4.translation(this.pos.x - this.width / 2, this.pos.y - this.height / 2, this.pos.z)
       )
       .times(Mat4.rotation(this.ang.theta, this.ang.x, this.ang.y, this.ang.z))
       .times(Mat4.scale(this.width / 2, this.height / 2, 0.1));
