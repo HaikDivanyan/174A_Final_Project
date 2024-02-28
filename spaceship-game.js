@@ -87,8 +87,8 @@ export class SpaceshipGame extends Scene {
       ship_model: new Shape_From_File('assets/spaceship.obj'),
     };
     this.shapes.skybox.arrays.texture_coord.forEach((v) => {
-      v[0] *= 10;
-      v[1] *= 10;
+      v[0] *= 1;
+      v[1] *= 1;
     });
 
     this.materials = {
@@ -118,19 +118,19 @@ export class SpaceshipGame extends Scene {
         texture: new Texture('assets/text.png'),
       }),
       //uncomment for stationary stars
-      // space_skybox: new Material(new defs.Textured_Phong(), {
-      //   ambient: 0.5,
-      //   diffusivity: 0,
-      //   specularity: 0,
-      //   texture: new Texture('assets/space.jpg'),
-      // }),
+       space_skybox: new Material(new defs.Textured_Phong(), {
+         ambient: 0.5,
+         diffusivity: 0,
+         specularity: 0,
+        texture: new Texture('assets/2dbackdrop.jpg'),
+       }),
       //uncomment for falling stars
-      space_skybox: new Material(new defs.Texture_Zoom(), {
-        ambient: 0.5,
-        diffusivity: 0,
-        specularity: 0,
-        texture: new Texture('assets/space.jpg'),
-      }),
+    //  space_skybox: new Material(new defs.Texture_Zoom(), {
+     //   ambient: 0.5,
+     //   diffusivity: 0,
+     //   specularity: 0,
+     //   texture: new Texture('assets/space.jpg'),
+     // }),
     };
 
     this.initial_camera_location = Mat4.look_at(
