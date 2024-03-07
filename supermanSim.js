@@ -77,7 +77,7 @@ export class SupermanSimGame extends Scene {
       cube_outline: new defs.Cube_Outline(),
       testCube: new defs.Cube(),
       ship: new defs.Square_Pyramid_Outline(),
-      ship_model: new Shape_From_File("assets/spaceship.obj"),
+      ship_model: new Shape_From_File("assets/FinalBaseMesh.obj"),
     };
     this.shapes.skybox.arrays.texture_coord.forEach((v) => {
       v[0] *= 1;
@@ -320,12 +320,25 @@ export class SupermanSimGame extends Scene {
     }
 
     /* SETUP SHIP */
+    // let ship_transform = Mat4.identity().times(
+    //   Mat4.translation(this.ship_position.x, this.ship_position.y, this.ship_position.z)
+    //     .times(Mat4.rotation(this.ship_rotation.horizontal, 0, 1, 0))
+    //     .times(Mat4.rotation(this.ship_rotation.vertical, 1, 0, 0))
+    //     .times(Mat4.rotation(this.ship_rotation.tilt, 0, 0, 1))
+    //     .times(Mat4.rotation(Math.PI, 0, 1, 0))
+    // );
+
     let ship_transform = Mat4.identity()
       .times(Mat4.translation(this.ship_position.x, this.ship_position.y, this.ship_position.z))
+      // Rotate around Y-axis to make the head face forward
+      .times(Mat4.rotation(Math.PI, 0, 1, 0))
+      // Rotate around X-axis to make it belly-down
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      // Apply a slight additional rotation around the X-axis to tilt the feet downward
+      .times(Mat4.rotation(-Math.PI / 10, 1, 0, 0)) // Adjust this angle for the desired amount of tilt
       .times(Mat4.rotation(this.ship_rotation.horizontal, 0, 1, 0))
       .times(Mat4.rotation(this.ship_rotation.vertical, 1, 0, 0))
-      .times(Mat4.rotation(this.ship_rotation.tilt, 0, 0, 1))
-      .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
+      .times(Mat4.rotation(this.ship_rotation.tilt, 0, 0, 1));
 
     this.shapes.ship.draw(
       context,
