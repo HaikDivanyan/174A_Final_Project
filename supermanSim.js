@@ -402,12 +402,22 @@ export class SupermanSimGame extends Scene {
       this.high_score = Math.max(this.high_score, Math.floor(this.score));
       this.game_speed += dt * 2;
       if (this.upArrowPressed) {
-        if (this.ship_rotation.vertical < Math.PI / 4)
-          this.ship_rotation.vertical += (Math.PI / 4) * this.ship_turn_speed * dt;
+        // Move up
+        this.ship_position.y = Math.min(this.ship_position.y + this.ship_speed * dt, 12.0);
+        // Tilt up (decrease the vertical rotation angle)
+        this.ship_rotation.vertical = Math.max(
+          this.ship_rotation.vertical - (Math.PI / 4) * this.ship_turn_speed * dt,
+          -Math.PI / 4
+        );
       }
       if (this.downArrowPressed) {
-        if (this.ship_rotation.vertical > -Math.PI / 4)
-          this.ship_rotation.vertical -= (Math.PI / 4) * this.ship_turn_speed * dt;
+        // Move down
+        this.ship_position.y = Math.max(this.ship_position.y - this.ship_speed * dt, -6.5);
+        // Tilt down (increase the vertical rotation angle)
+        this.ship_rotation.vertical = Math.min(
+          this.ship_rotation.vertical + (Math.PI / 4) * this.ship_turn_speed * dt,
+          Math.PI / 4
+        );
       }
       if (!this.upArrowPressed && !this.downArrowPressed) {
         if (Math.abs(this.ship_rotation.vertical) < 0.01) this.ship_rotation.vertical = 0;
