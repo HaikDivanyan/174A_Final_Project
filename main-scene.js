@@ -1,5 +1,5 @@
-import { defs, tiny } from './common.js';
-import { SpaceshipGame } from './spaceship-game.js';
+import { defs, tiny } from "./common.js";
+import { SupermanSimGame } from "./supermanSim.js";
 
 // Pull these names into this module's scope for convenience:
 const {
@@ -30,12 +30,12 @@ const {
 //                      (On the web, a server should instead just pack all these as well
 //                      as common.js into one file for you, such as "dependencies.js")
 
-Object.assign(defs, { SpaceshipGame });
+Object.assign(defs, { SupermanSimGame: SupermanSimGame });
 
 // ******************** End extra step
 
 // (Can define Main_Scene's class here)
 
-const Main_Scene = SpaceshipGame;
+const Main_Scene = SupermanSimGame;
 
-export { Main_Scene, Canvas_Widget, Code_Widget, Text_Widget, defs };
+export { Canvas_Widget, Code_Widget, Main_Scene, Text_Widget, defs };

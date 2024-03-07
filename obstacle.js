@@ -13,7 +13,7 @@ export class Obstacle {
     this.fragments = []; // will hold the Obstacle_Fragment objects generated upon collision
     this.material = new Material(new defs.Spotlight_Shader(), {
       color: color(0, 1, 0, 1),
-      ambient: 0.15,
+      ambient: 1,
     });
   }
 
