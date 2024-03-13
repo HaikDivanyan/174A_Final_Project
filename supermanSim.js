@@ -89,9 +89,9 @@ export class SupermanSimGame extends Scene {
       transparent: new Material(new defs.Phong_Shader(), {
         color: hex_color("#00000000"),
       }),
-      metal: new Material(new defs.Textured_Phong(1), {
-        color: color(0.5, 0.5, 0.5, 1),
-        ambient: 0.3,
+      suit: new Material(new defs.Textured_Phong(), {
+        color: hex_color('#0047AB'),
+        ambient: 0.5,
         diffusivity: 1,
         specularity: 1,
         texture: new Texture("assets/metal.jpg"),
@@ -107,7 +107,7 @@ export class SupermanSimGame extends Scene {
         texture: new Texture("assets/text.png"),
       }),
       space_skybox: new Material(new defs.Textured_Phong(), {
-        ambient: 0.5,
+        ambient: 0.2,
         diffusivity: 0,
         specularity: 0,
         texture: new Texture("assets/2dbackdrop.jpg"),
@@ -304,11 +304,11 @@ export class SupermanSimGame extends Scene {
       program_state,
       supermanTransform,
       this.materials.color.override({
-        color: hex_color("#ffffff"),
+        color: hex_color("#ff0000"),
         ambient: 1.0,
       })
     );
-    this.shapes.supermanModel.draw(context, program_state, supermanTransform, this.materials.metal);
+    this.shapes.supermanModel.draw(context, program_state, supermanTransform, this.materials.suit);
 
     this.shapes.skybox.draw(
       context,
