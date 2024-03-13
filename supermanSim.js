@@ -91,7 +91,7 @@ export class SupermanSimGame extends Scene {
       }),
       suit: new Material(new defs.Textured_Phong(), {
         color: hex_color('#0047AB'),
-        ambient: 0.5,
+        ambient: 0.9,
         diffusivity: 1,
         specularity: 1,
         texture: new Texture("assets/metal.jpg"),
@@ -107,7 +107,7 @@ export class SupermanSimGame extends Scene {
         texture: new Texture("assets/text.png"),
       }),
       space_skybox: new Material(new defs.Textured_Phong(), {
-        ambient: 0.2,
+        ambient: 0.4,
         diffusivity: 0,
         specularity: 0,
         texture: new Texture("assets/2dbackdrop.jpg"),
