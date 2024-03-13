@@ -19,24 +19,16 @@ const {
 } = tiny;
 
 Object.assign(tiny, widgets);
-//hello
 const defs = {};
 
 export { defs, tiny };
 
 const Square = (defs.Square = class Square extends Shape {
-  // **Square** demonstrates two triangles that share vertices.  On any planar surface, the
-  // interior edges don't make any important seams.  In these cases there's no reason not
-  // to re-use data of the common vertices between triangles.  This makes all the vertex
-  // arrays (position, normals, etc) smaller and more cache friendly.
   constructor() {
     super("position", "normal", "texture_coord");
-    // Specify the 4 square corner locations, and match those up with normal vectors:
     this.arrays.position = Vector3.cast([-1, -1, 0], [1, -1, 0], [-1, 1, 0], [1, 1, 0]);
     this.arrays.normal = Vector3.cast([0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]);
-    // Arrange the vertices into a square shape in texture space too:
     this.arrays.texture_coord = Vector.cast([0, 0], [1, 0], [0, 1], [1, 1]);
-    // Use two triangles this time, indexing into four distinct vertices:
     this.indices.push(0, 1, 2, 1, 3, 2);
   }
 });
@@ -47,15 +39,12 @@ const Text_Line = (defs.Text_Line = class Text_Line extends Shape {
     this.max_size = max_size;
     var object_transform = Mat4.identity();
     for (var i = 0; i < max_size; i++) {
-      // Each quad is a separate Square instance:
       defs.Square.insert_transformed_copy_into(this, [], object_transform);
       object_transform.post_multiply(Mat4.translation(1.5, 0, 0));
     }
   }
 
   set_string(line, context) {
-    // set_string():  Call this to overwrite the texture coordinates buffer with new
-    // values per quad, which enclose each of the string's characters.
     this.arrays.texture_coord = [];
     for (var i = 0; i < this.max_size; i++) {
       var row = Math.floor((i < line.length ? line.charCodeAt(i) : " ".charCodeAt()) / 16),
@@ -82,19 +71,13 @@ const Text_Line = (defs.Text_Line = class Text_Line extends Shape {
 });
 
 const Cube = (defs.Cube = class Cube extends Shape {
-  // **Cube** A closed 3D shape, and the first example of a compound shape (a Shape constructed
-  // out of other Shapes).  A cube inserts six Square strips into its own arrays, using six
-  // different matrices as offsets for each square.
   constructor() {
     super("position", "normal", "texture_coord");
-    // Loop 3 times (for each axis), and inside loop twice (for opposing cube sides):
     for (let i = 0; i < 3; i++)
       for (let j = 0; j < 2; j++) {
         const square_transform = Mat4.rotation(i == 0 ? Math.PI / 2 : 0, 1, 0, 0)
           .times(Mat4.rotation(Math.PI * j - (i == 1 ? Math.PI / 2 : 0), 0, 1, 0))
           .times(Mat4.translation(0, 0, 1));
-        // Calling this function of a Square (or any Shape) copies it into the specified
-        // Shape (this one) at the specified matrix offset (square_transform):
         Square.insert_transformed_copy_into(this, [], square_transform);
       }
   }
@@ -103,10 +86,6 @@ const Cube = (defs.Cube = class Cube extends Shape {
 const Cube_Outline = (defs.Cube_Outline = class Cube_Outline extends Shape {
   constructor() {
     super("position", "color");
-    //  TODO (Requirement 5).
-    // When a set of lines is used in graphics, you should think of the list entries as
-    // broken down into pairs; each pair of vertices will be drawn as a line segment.
-    // Note: since the outline is rendered with Basic_shader, you need to redefine the position and color of each vertex
     this.arrays.position = Vector3.cast(
       [-1, 1, -1],
       [-1, 1, 1],
@@ -195,11 +174,7 @@ const Square_Pyramid_Outline = (defs.Square_Pyramid_Outline = class Square_Pyram
 });
 
 const Basic_Shader = (defs.Basic_Shader = class Basic_Shader extends Shader {
-  // **Basic_Shader** is nearly the simplest example of a subclass of Shader, which stores and
-  // maanges a GPU program.  Basic_Shader is a trivial pass-through shader that applies a
-  // shape's matrices and then simply samples literal colors stored at each vertex.
   update_GPU(context, gpu_addresses, graphics_state, model_transform, material) {
-    // update_GPU():  Defining how to synchronize our JavaScript's variables to the GPU's:
     const [P, C, M] = [
         graphics_state.projection_transform,
         graphics_state.camera_inverse,
@@ -214,14 +189,12 @@ const Basic_Shader = (defs.Basic_Shader = class Basic_Shader extends Shader {
   }
 
   shared_glsl_code() {
-    // ********* SHARED CODE, INCLUDED IN BOTH SHADERS *********
     return `precision mediump float;
                 varying vec4 VERTEX_COLOR;
             `;
   }
 
   vertex_glsl_code() {
-    // ********* VERTEX SHADER *********
     return (
       this.shared_glsl_code() +
       `
@@ -239,7 +212,6 @@ const Basic_Shader = (defs.Basic_Shader = class Basic_Shader extends Shader {
   }
 
   fragment_glsl_code() {
-    // ********* FRAGMENT SHADER *********
     return (
       this.shared_glsl_code() +
       `
@@ -252,19 +224,12 @@ const Basic_Shader = (defs.Basic_Shader = class Basic_Shader extends Shader {
 });
 
 const Phong_Shader = (defs.Phong_Shader = class Phong_Shader extends Shader {
-  // **Phong_Shader** is a subclass of Shader, which stores and maanges a GPU program.
-  // Graphic cards prior to year 2000 had shaders like this one hard-coded into them
-  // instead of customizable shaders.  Phong-Blinn" Shading here is a process of
-  // determining brightness of pixels via vector math.  It compares the normal vector
-  // at that pixel with the vectors toward the camera and light sources.
-
   constructor(num_lights = 2) {
     super();
     this.num_lights = num_lights;
   }
 
   shared_glsl_code() {
-    // ********* SHARED CODE, INCLUDED IN BOTH SHADERS *********
     return (
       ` precision mediump float;
                 const int N_LIGHTS = ` +
@@ -314,7 +279,6 @@ const Phong_Shader = (defs.Phong_Shader = class Phong_Shader extends Shader {
   }
 
   vertex_glsl_code() {
-    // ********* VERTEX SHADER *********
     return (
       this.shared_glsl_code() +
       `
@@ -335,9 +299,6 @@ const Phong_Shader = (defs.Phong_Shader = class Phong_Shader extends Shader {
   }
 
   fragment_glsl_code() {
-    // ********* FRAGMENT SHADER *********
-    // A fragment is a pixel that's overlapped by the current triangle.
-    // Fragments affect the final image or get discarded due to depth.
     return (
       this.shared_glsl_code() +
       `
@@ -351,8 +312,6 @@ const Phong_Shader = (defs.Phong_Shader = class Phong_Shader extends Shader {
   }
 
   send_material(gl, gpu, material) {
-    // send_material(): Send the desired shape-wide material qualities to the
-    // graphics card, where they will tweak the Phong lighting formula.
     gl.uniform4fv(gpu.shape_color, material.color);
     gl.uniform1f(gpu.ambient, material.ambient);
     gl.uniform1f(gpu.diffusivity, material.diffusivity);
@@ -361,22 +320,15 @@ const Phong_Shader = (defs.Phong_Shader = class Phong_Shader extends Shader {
   }
 
   send_gpu_state(gl, gpu, gpu_state, model_transform) {
-    // send_gpu_state():  Send the state of our whole drawing context to the GPU.
     const O = vec4(0, 0, 0, 1),
       camera_center = gpu_state.camera_transform.times(O).to3();
     gl.uniform3fv(gpu.camera_center, camera_center);
-    // Use the squared scale trick from "Eric's blog" instead of inverse transpose matrix:
     const squared_scale = model_transform
       .reduce((acc, r) => {
         return acc.plus(vec4(...r).times_pairwise(r));
       }, vec4(0, 0, 0, 0))
       .to3();
     gl.uniform3fv(gpu.squared_scale, squared_scale);
-    // Send the current matrices to the shader.  Go ahead and pre-compute
-    // the products we'll need of the of the three special matrices and just
-    // cache and send those.  They will be the same throughout this draw
-    // call, and thus across each instance of the vertex shader.
-    // Transpose them since the GPU expects matrices as column-major arrays.
     const PCM = gpu_state.projection_transform
       .times(gpu_state.camera_inverse)
       .times(model_transform);
@@ -391,7 +343,6 @@ const Phong_Shader = (defs.Phong_Shader = class Phong_Shader extends Shader {
       Matrix.flatten_2D_to_1D(PCM.transposed())
     );
 
-    // Omitting lights will show only the material color, scaled by the ambient term:
     if (!gpu_state.lights.length) return;
 
     const light_positions_flattened = [],
@@ -410,13 +361,7 @@ const Phong_Shader = (defs.Phong_Shader = class Phong_Shader extends Shader {
   }
 
   update_GPU(context, gpu_addresses, gpu_state, model_transform, material) {
-    // update_GPU(): Define how to synchronize our JavaScript's variables to the GPU's.  This is where the shader
-    // recieves ALL of its inputs.  Every value the GPU wants is divided into two categories:  Values that belong
-    // to individual objects being drawn (which we call "Material") and values belonging to the whole scene or
-    // program (which we call the "Program_State").  Send both a material and a program state to the shaders
-    // within this function, one data field at a time, to fully initialize the shader for a draw.
 
-    // Fill in any missing fields in the Material object with custom defaults for this shader:
     const defaults = {
       color: color(0, 0, 0, 1),
       ambient: 0,
@@ -432,9 +377,6 @@ const Phong_Shader = (defs.Phong_Shader = class Phong_Shader extends Shader {
 });
 
 const Textured_Phong = (defs.Textured_Phong = class Textured_Phong extends Phong_Shader {
-  // **Textured_Phong** is a Phong Shader extended to addditionally decal a
-  // texture image over the drawn shape, lined up according to the texture
-  // coordinates that are stored at each shape vertex.
   vertex_glsl_code() {
     // ********* VERTEX SHADER *********
     return (
@@ -461,9 +403,6 @@ const Textured_Phong = (defs.Textured_Phong = class Textured_Phong extends Phong
   }
 
   fragment_glsl_code() {
-    // ********* FRAGMENT SHADER *********
-    // A fragment is a pixel that's overlapped by the current triangle.
-    // Fragments affect the final image or get discarded due to depth.
     return (
       this.shared_glsl_code() +
       `
@@ -484,14 +423,11 @@ const Textured_Phong = (defs.Textured_Phong = class Textured_Phong extends Phong
   }
 
   update_GPU(context, gpu_addresses, gpu_state, model_transform, material) {
-    // update_GPU(): Add a little more to the base class's version of this method.
     super.update_GPU(context, gpu_addresses, gpu_state, model_transform, material);
 
     context.uniform1f(gpu_addresses.animation_time, gpu_state.animation_time / 1000);
     if (material.texture && material.texture.ready) {
-      // Select texture unit 0 for the fragment shader Sampler2D uniform called "texture":
       context.uniform1i(gpu_addresses.texture, 0);
-      // For this draw, use the texture image from correct the GPU buffer:
       material.texture.activate(context);
     }
   }
@@ -530,7 +466,6 @@ const Spotlight_Shader = (defs.Spotlight_Shader = class SpotLight_Shader extends
   }
 
   shared_glsl_code() {
-    // ********* SHARED CODE, INCLUDED IN BOTH SHADERS *********
     return (
       ` precision mediump float;
                 const int N_LIGHTS = ` +
@@ -586,7 +521,6 @@ const Spotlight_Shader = (defs.Spotlight_Shader = class SpotLight_Shader extends
   }
 
   vertex_glsl_code() {
-    // ********* VERTEX SHADER *********
     return (
       this.shared_glsl_code() +
       `
@@ -604,9 +538,6 @@ const Spotlight_Shader = (defs.Spotlight_Shader = class SpotLight_Shader extends
   }
 
   fragment_glsl_code() {
-    // ********* FRAGMENT SHADER *********
-    // A fragment is a pixel that's overlapped by the current triangle.
-    // Fragments affect the final image or get discarded due to depth.
     return (
       this.shared_glsl_code() +
       `
@@ -618,8 +549,6 @@ const Spotlight_Shader = (defs.Spotlight_Shader = class SpotLight_Shader extends
   }
 
   send_material(gl, gpu, material) {
-    // send_material(): Send the desired shape-wide material qualities to the
-    // graphics card, where they will tweak the Phong lighting formula.
     gl.uniform4fv(gpu.shape_color, material.color);
     gl.uniform1f(gpu.ambient, material.ambient);
     gl.uniform1f(gpu.diffusivity, material.diffusivity);
@@ -628,22 +557,15 @@ const Spotlight_Shader = (defs.Spotlight_Shader = class SpotLight_Shader extends
   }
 
   send_gpu_state(gl, gpu, gpu_state, model_transform) {
-    // send_gpu_state():  Send the state of our whole drawing context to the GPU.
     const O = vec4(0, 0, 0, 1),
       camera_center = gpu_state.camera_transform.times(O).to3();
     gl.uniform3fv(gpu.camera_center, camera_center);
-    // Use the squared scale trick from "Eric's blog" instead of inverse transpose matrix:
     const squared_scale = model_transform
       .reduce((acc, r) => {
         return acc.plus(vec4(...r).times_pairwise(r));
       }, vec4(0, 0, 0, 0))
       .to3();
     gl.uniform3fv(gpu.squared_scale, squared_scale);
-    // Send the current matrices to the shader.  Go ahead and pre-compute
-    // the products we'll need of the of the three special matrices and just
-    // cache and send those.  They will be the same throughout this draw
-    // call, and thus across each instance of the vertex shader.
-    // Transpose them since the GPU expects matrices as column-major arrays.
     const PCM = gpu_state.projection_transform
       .times(gpu_state.camera_inverse)
       .times(model_transform);
@@ -658,7 +580,6 @@ const Spotlight_Shader = (defs.Spotlight_Shader = class SpotLight_Shader extends
       Matrix.flatten_2D_to_1D(PCM.transposed())
     );
 
-    // Omitting lights will show only the material color, scaled by the ambient term:
     if (!gpu_state.lights.length) return;
 
     const light_positions_flattened = [],
@@ -685,13 +606,6 @@ const Spotlight_Shader = (defs.Spotlight_Shader = class SpotLight_Shader extends
   }
 
   update_GPU(context, gpu_addresses, gpu_state, model_transform, material) {
-    // update_GPU(): Define how to synchronize our JavaScript's variables to the GPU's.  This is where the shader
-    // recieves ALL of its inputs.  Every value the GPU wants is divided into two categories:  Values that belong
-    // to individual objects being drawn (which we call "Material") and values belonging to the whole scene or
-    // program (which we call the "Program_State").  Send both a material and a program state to the shaders
-    // within this function, one data field at a time, to fully initialize the shader for a draw.
-
-    // Fill in any missing fields in the Material object with custom defaults for this shader:
     const defaults = {
       color: color(0, 0, 0, 1),
       ambient: 0,
