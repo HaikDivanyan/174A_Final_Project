@@ -72,7 +72,7 @@ export class SupermanSimGame extends Scene {
       cube: new defs.Cube(),
       cube_outline: new defs.Cube_Outline(),
       testCube: new defs.Cube(),
-      ship: new defs.Square_Pyramid_Outline(),
+      superman: new defs.Square_Pyramid_Outline(),
       supermanModel: new Shape_From_File("assets/superman.obj"),
     };
     this.shapes.skybox.arrays.texture_coord.forEach((v) => {
@@ -90,7 +90,7 @@ export class SupermanSimGame extends Scene {
         color: hex_color("#00000000"),
       }),
       suit: new Material(new defs.Textured_Phong(), {
-        color: hex_color('#0047AB'),
+        color: hex_color("#0047AB"),
         ambient: 0.9,
         diffusivity: 1,
         specularity: 1,
@@ -299,7 +299,7 @@ export class SupermanSimGame extends Scene {
       .times(Mat4.rotation(this.supermanRotation.vertical, 1, 0, 0))
       .times(Mat4.rotation(this.supermanRotation.tilt, 0, 0, 1));
 
-    this.shapes.ship.draw(
+    this.shapes.superman.draw(
       context,
       program_state,
       supermanTransform,
