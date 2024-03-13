@@ -73,7 +73,7 @@ export class SupermanSimGame extends Scene {
       cube_outline: new defs.Cube_Outline(),
       testCube: new defs.Cube(),
       ship: new defs.Square_Pyramid_Outline(),
-      ship_model: new Shape_From_File("assets/FinalBaseMesh.obj"),
+      supermanModel: new Shape_From_File("assets/superman.obj"),
     };
     this.shapes.skybox.arrays.texture_coord.forEach((v) => {
       v[0] *= 1;
@@ -308,7 +308,7 @@ export class SupermanSimGame extends Scene {
         ambient: 1.0,
       })
     );
-    this.shapes.ship_model.draw(context, program_state, supermanTransform, this.materials.metal);
+    this.shapes.supermanModel.draw(context, program_state, supermanTransform, this.materials.metal);
 
     this.shapes.skybox.draw(
       context,
