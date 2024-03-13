@@ -1,6 +1,6 @@
 import { defs, tiny } from "./common.js";
 import { Board } from "./obstacle_board.js";
-import { Shape_From_File } from "./shape-from-file.js";
+import { Shape_From_File } from "./load-model.js";
 
 const {
   Vector,
