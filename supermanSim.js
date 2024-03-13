@@ -20,50 +20,9 @@ const {
   Scene,
 } = tiny;
 
-const numParticles = 25;
-
-const particle = class particle {
-  constructor(square, posZ, posY, color, velocity) {
-    this.square = square;
-    this.posZ = posZ;
-    this.posY = posY;
-    this.posX = 0.0;
-    this.color = color;
-    this.velocity = velocity;
-    this.ambient = 1;
-    this.transformed = false;
-    this.storedMat;
-  }
-
-  update(program_state) {
-    const t = program_state.animation_time / 1000,
-      dt = program_state.animation_delta_time / 1000;
-
-    this.posX += dt * this.velocity;
-    if (this.posX < -3.5) {
-      this.posX = 0.0;
-      this.transformed = false;
-    }
-
-    this.color = color(1.0, (-1.0 * this.posX) / 4.5, 0.0, 1.0 + this.posX / 2);
-  }
-};
-
 export class SupermanSimGame extends Scene {
   constructor() {
     super();
-
-    this.particleSystem = [];
-
-    for (let bint = 0; bint < numParticles; bint++) {
-      let randPosZ = 0.6 * Math.random() - 0.3;
-      let randPosY = 0.6 * Math.random() - 0.3;
-
-      let randSpeedX = Math.random() * -5 - 5;
-      this.particleSystem.push(
-        new particle(new defs.Square(), randPosZ, randPosY, color(1.0, 0.0, 0.0, 1), randSpeedX)
-      );
-    }
 
     this.shapes = {
       square: new defs.Square(),
