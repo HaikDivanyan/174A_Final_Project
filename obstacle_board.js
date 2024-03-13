@@ -31,8 +31,8 @@ export class Board {
 
   move(speed, dt) {
     for (let i = 0; i < 25; i++) this.obstacles[i].move(speed, dt);
-    this.z += speed * dt; 
-    if (this.z >= 50) this.reset(); 
+    this.z += speed * dt;
+    if (this.z >= 50) this.reset();
   }
   reset() {
     this.z -= 300;
@@ -40,14 +40,14 @@ export class Board {
     for (let i = 0; i < 25; i++)
       this.obstacles[i].transform = this.obstacles[i].transform.times(Mat4.translation(0, 0, -300));
   }
-  check_collision(ship) {
+  check_collision(superman) {
     if (Math.abs(this.z) > 1) return null;
 
     for (let i = 0; i < 25; i++) {
       if (
         this.patterns[this.pattern_index][i] == 1 &&
         !this.obstacles[i].is_fractured &&
-        this.obstacles[i].has_collided(ship)
+        this.obstacles[i].has_collided(superman)
       )
         return this.obstacles[i];
     }
@@ -56,7 +56,7 @@ export class Board {
   }
 
   draw(context, program_state, speed, dt) {
-    this.move(speed, dt); 
+    this.move(speed, dt);
     for (let i = 0; i < 25; i++) {
       if (this.patterns[this.pattern_index][i] == 1) this.obstacles[i].draw(context, program_state);
     }
